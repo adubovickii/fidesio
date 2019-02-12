@@ -1,0 +1,24 @@
+<!-- ko if: (getEnabled()) -->
+    <!-- ko if: (isUseDonation()) -->
+        <div id="checkout-donation">
+            <p data-bind="html: getShortDescription()"></p>
+            <p data-bind="html: getLongDescription()"></p>
+            <img class="preview-image" attr="src: getImage()"/>
+            <select
+                    class="donation-rates"
+                    options="getRates()"
+                    optionsValue="'rate_price'"
+                    optionsText="'rate_price'"
+                    data-bind="click: setDonate"
+            />
+        </div>
+    <!-- /ko -->
+    <div class="donation-checkbox">
+        <input type="checkbox"
+               name="donation-checkbox"
+               data-bind="checked: useDonationFlag" />
+        <label>
+            <span data-bind="i18n: 'I want to make a donation'"></span>
+        </label>
+    </div>
+<!-- /ko -->
