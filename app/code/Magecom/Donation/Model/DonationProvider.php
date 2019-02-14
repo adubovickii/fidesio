@@ -1,4 +1,22 @@
 <?php
+/**
+ * Magecom
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magecom.net so we can send you a copy immediately.
+ *
+ * @category Magecom
+ * @package Magecom_Donation
+ * @copyright Copyright (c) 2019 Magecom, Inc. (http://www.magecom.net)
+ * @license  http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 
 namespace Magecom\Donation\Model;
 
@@ -10,7 +28,9 @@ use Magento\Store\Model\ScopeInterface;
 /**
  * Class DonationProvider
  *
- * @package Magecom\Donation\Model
+ * @category Magecom
+ * @package Magecom_Donation
+ * @author Magecom
  */
 class DonationProvider
 {
@@ -25,38 +45,24 @@ class DonationProvider
     const PATH_SHORT_DESCRIPTION_DONATION = 'magecom_donation/general/magecom_short_text_donation';
 
     /**
-     * Path to config long text for donation module.
-     */
-    const PATH_LONG_DESCRIPTION_DONATION = 'magecom_donation/general/magecom_long_text_donation';
-
-    /**
-     * Path to config image for donation module.
-     */
-    const PATH_IMAGE_DONATION = 'magecom_donation/general/magecom_image_donation';
-
-    /**
      * Path to config rates for donation module.
      */
     const PATH_RATES_DONATION = 'magecom_donation/general/magecom_rates_donation';
 
     /**
-     * Folder name for donation image.
-     */
-    const FOLDER_NAME_FOR_DONATIOT = 'donation';
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     protected $storeManager;
 
     /**
      * DonationProvider constructor.
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -90,42 +96,6 @@ class DonationProvider
             self::PATH_SHORT_DESCRIPTION_DONATION,
             ScopeInterface::SCOPE_STORE
         );
-    }
-
-    /**
-     * Get donation long description.
-     *
-     * @return mixed
-     */
-    public function getDonationLongDescription()
-    {
-        return $this->scopeConfig->getValue(
-            self::PATH_LONG_DESCRIPTION_DONATION,
-            ScopeInterface::SCOPE_STORE
-        );
-    }
-
-    /**
-     * Get donation image.
-     *
-     * @return mixed
-     */
-    public function getDonationImage()
-    {
-        $imagePath = $this->scopeConfig->getValue(
-            self::PATH_IMAGE_DONATION,
-            ScopeInterface::SCOPE_STORE
-        );
-
-        if (isset($imagePath) && is_string($imagePath)) {
-            $mediaUrl = $this ->storeManager->getStore()->getBaseUrl(
-                \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
-            );
-
-            return sprintf('%s%s/%s',$mediaUrl,self::FOLDER_NAME_FOR_DONATIOT, $imagePath);
-        }
-
-        return false;
     }
 
     /**

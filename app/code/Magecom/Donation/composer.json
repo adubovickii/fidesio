@@ -1,0 +1,26 @@
+{
+    "name": "Magecom_Donation",
+    "description": "Magecom_Donation module for test assigment.",
+    "require": {
+        "php": "~7.0.2|7.0.6|7.1.3|~7.2.0",
+        "magento/module-sales": "100.1.*",
+        "magento/module-quote": "100.1.*",
+        "magento/module-checkout": "100.1.*"
+    },
+    "suggest": {
+        "magento/module-tax-sample-data": "Sample Data version:100.1.*"
+    },
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "OSL-3.0"
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Magecom\\Donation\\": ""
+        }
+    }
+}

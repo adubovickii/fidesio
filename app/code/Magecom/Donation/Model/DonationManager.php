@@ -1,4 +1,22 @@
 <?php
+/**
+ * Magecom
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magecom.net so we can send you a copy immediately.
+ *
+ * @category Magecom
+ * @package Magecom_Donation
+ * @copyright Copyright (c) 2019 Magecom, Inc. (http://www.magecom.net)
+ * @license  http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 
 namespace Magecom\Donation\Model;
 
@@ -15,7 +33,9 @@ use Magento\Quote\Model\Cart\Totals;
 /**
  * Class DonationManager
  *
- * @package Magecom\Donation\Model
+ * @category Magecom
+ * @package Magecom_Donation
+ * @author Magecom
  */
 class DonationManager implements DonationManagerInterface
 {
@@ -61,28 +81,30 @@ class DonationManager implements DonationManagerInterface
      * @throws CouldNotSaveException
      * @throws NoSuchEntityException
      */
-    public function set($donationCost, $cartId)
+    public function setDonation($donationCost, $cartId)
     {
-        /** @var $quoteIdMask QuoteIdMask */
-        $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
+        if (isset($cartId) && isset($donationCost)) {
+            /** @var $quoteIdMask QuoteIdMask */
+            $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
+            if ($quoteId = $quoteIdMask->getQuoteId()) {
+                /** @var  \Magento\Quote\Model\Quote $quote */
+                $quote = $this->quoteRepository->getActive($quoteId);
+                $donationCost = (float)$donationCost;
 
-        if ($quoteId = $quoteIdMask->getQuoteId()) {
-            /** @var  \Magento\Quote\Model\Quote $quote */
-            $quote = $this->quoteRepository->getActive($quoteId);
+                if (!$quote->getItemsCount()) {
+                    throw new NoSuchEntityException(__('Cart %1 doesn\'t contain products', $cartId));
+                }
 
-            if (!$quote->getItemsCount()) {
-                throw new NoSuchEntityException(__('Cart %1 doesn\'t contain products', $cartId));
+                try {
+                    $quote->setDonation($donationCost);
+                    $this->quoteRepository->save($quote->collectTotals());
+                } catch (\Exception $e) {
+                    throw new CouldNotSaveException(__('Could not apply donation'));
+                }
+                return true;
             }
-
-            try {
-                $quote->setDonation($donationCost);
-                $this->quoteRepository->save($quote->collectTotals());
-            } catch (\Exception $e) {
-                throw new CouldNotSaveException(__('Could not apply donation'));
-            }
-
-            return true;
         }
+        return false;
     }
 
     /**
@@ -94,26 +116,28 @@ class DonationManager implements DonationManagerInterface
      * @throws CouldNotDeleteException
      * @throws NoSuchEntityException
      */
-    public function remove($cartId)
+    public function removeDonation($cartId)
     {
-        /** @var $quoteIdMask QuoteIdMask */
-        $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
+        if (isset($cartId)) {
+            /** @var $quoteIdMask QuoteIdMask */
+            $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
+            if ($quoteId = $quoteIdMask->getQuoteId()) {
+                /** @var  \Magento\Quote\Model\Quote $quote */
+                $quote = $this->quoteRepository->getActive($quoteId);
 
-        if ($quoteId = $quoteIdMask->getQuoteId()) {
-            /** @var  \Magento\Quote\Model\Quote $quote */
-            $quote = $this->quoteRepository->getActive($quoteId);
-            if (!$quote->getItemsCount()) {
-                throw new NoSuchEntityException(__('Cart %1 doesn\'t contain products', $cartId));
+                if (!$quote->getItemsCount()) {
+                    throw new NoSuchEntityException(__('Cart %1 doesn\'t contain products', $cartId));
+                }
+
+                try {
+                    $quote->setDonation(null);
+                    $this->quoteRepository->save($quote->collectTotals());
+                } catch (\Exception $e) {
+                    throw new CouldNotDeleteException(__('Could not delete donation'));
+                }
+                return true;
             }
-
-            try {
-                $quote->setDonation(null);
-                $this->quoteRepository->save($quote->collectTotals());
-            } catch (\Exception $e) {
-                throw new CouldNotDeleteException(__('Could not delete donation'));
-            }
-
-            return true;
         }
+        return false;
     }
 }
