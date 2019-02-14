@@ -21,9 +21,6 @@
 <!-- ko if: (getEnabled() && getRates()) -->
     <!-- ko if: (isUseDonation()) -->
         <div id="checkout-donation">
-            <!-- ko if: (getShortDescription()) -->
-                <p data-bind="html: getShortDescription()"></p>
-            <!-- /ko -->
             <select
                     class="donation-rates"
                     options="getRates()"
@@ -38,7 +35,7 @@
                name="donation-checkbox"
                data-bind="checked: useDonationFlag" />
         <label>
-            <span data-bind="i18n: 'I want to make a donation'"></span>
+            <span data-bind="html: getShortDescription()"></span>
         </label>
     </div>
 <!-- /ko -->

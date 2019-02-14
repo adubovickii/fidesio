@@ -24,6 +24,7 @@ use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magecom\Donation\Api\DonationManagerInterface;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Quote\Model\QuoteIdMask;
 use Magento\Quote\Model\QuoteIdMaskFactory;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -39,6 +40,16 @@ use Magento\Quote\Model\Cart\Totals;
  */
 class DonationManager implements DonationManagerInterface
 {
+    /**
+     * Default quote id mask default size
+     */
+    const QUOTE_ID_MASK_DEFAULT_SIZE = 32;
+
+    /**
+     * Reg exp for donation cost.
+     */
+    const REG_EXP_FOR_DONATION = '/^\d{1,12}$/';
+
     /**
      * @var QuoteIdMaskFactory
      */
@@ -80,10 +91,11 @@ class DonationManager implements DonationManagerInterface
      * @return bool|mixed
      * @throws CouldNotSaveException
      * @throws NoSuchEntityException
+     * @throws ValidatorException
      */
     public function setDonation($donationCost, $cartId)
     {
-        if (isset($cartId) && isset($donationCost)) {
+        if ($this->validateQuoteMask($cartId) && $this->validateDonationCost($donationCost)) {
             /** @var $quoteIdMask QuoteIdMask */
             $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
             if ($quoteId = $quoteIdMask->getQuoteId()) {
@@ -115,10 +127,11 @@ class DonationManager implements DonationManagerInterface
      * @return bool|mixed
      * @throws CouldNotDeleteException
      * @throws NoSuchEntityException
+     * @throws ValidatorException
      */
     public function removeDonation($cartId)
     {
-        if (isset($cartId)) {
+        if ($this->validateQuoteMask($cartId)) {
             /** @var $quoteIdMask QuoteIdMask */
             $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
             if ($quoteId = $quoteIdMask->getQuoteId()) {
@@ -139,5 +152,37 @@ class DonationManager implements DonationManagerInterface
             }
         }
         return false;
+    }
+
+    /**
+     * Validate quote mask.
+     *
+     * @param $quoteMask
+     * @return bool
+     * @throws ValidatorException
+     */
+    private function validateQuoteMask($quoteMask)
+    {
+        if (isset($quoteMask) && is_string($quoteMask) && strlen($quoteMask) <= self::QUOTE_ID_MASK_DEFAULT_SIZE) {
+            return true;
+        }
+
+        throw new ValidatorException(__('Not valid quote mask.'));
+    }
+
+    /**
+     * Validate donation cost.
+     *
+     * @param $donation
+     * @return bool
+     * @throws ValidatorException
+     */
+    private function validateDonationCost($donation)
+    {
+        if (isset($donation) && preg_match(self::REG_EXP_FOR_DONATION, $donation)) {
+            return true;
+        }
+
+        throw new ValidatorException(__('Not valid donation cost.'));
     }
 }
