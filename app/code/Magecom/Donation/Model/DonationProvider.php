@@ -2,7 +2,10 @@
 
 namespace Magecom\Donation\Model;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\ScopeInterface;
+
 
 /**
  * Class DonationProvider
@@ -37,6 +40,10 @@ class DonationProvider
     const PATH_RATES_DONATION = 'magecom_donation/general/magecom_rates_donation';
 
     /**
+     * Folder name for donation image.
+     */
+    const FOLDER_NAME_FOR_DONATIOT = 'donation';
+    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -52,9 +59,11 @@ class DonationProvider
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager
     ) {
         $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -64,7 +73,10 @@ class DonationProvider
      */
     public function getEnableDonationModule()
     {
-        return $this->scopeConfig->getValue(self::PATH_ENABLED_DONATION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(
+            self::PATH_ENABLED_DONATION,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -74,7 +86,10 @@ class DonationProvider
      */
     public function getDonationShortDescription()
     {
-        return $this->scopeConfig->getValue(self::PATH_SHORT_DESCRIPTION_DONATION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(
+            self::PATH_SHORT_DESCRIPTION_DONATION,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -84,7 +99,10 @@ class DonationProvider
      */
     public function getDonationLongDescription()
     {
-        return $this->scopeConfig->getValue(self::PATH_LONG_DESCRIPTION_DONATION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(
+            self::PATH_LONG_DESCRIPTION_DONATION,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -94,7 +112,20 @@ class DonationProvider
      */
     public function getDonationImage()
     {
-        return $this->scopeConfig->getValue(self::PATH_IMAGE_DONATION, ScopeInterface::SCOPE_STORE);
+        $imagePath = $this->scopeConfig->getValue(
+            self::PATH_IMAGE_DONATION,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if (isset($imagePath) && is_string($imagePath)) {
+            $mediaUrl = $this ->storeManager->getStore()->getBaseUrl(
+                \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
+            );
+
+            return sprintf('%s%s/%s',$mediaUrl,self::FOLDER_NAME_FOR_DONATIOT, $imagePath);
+        }
+
+        return false;
     }
 
     /**
@@ -104,26 +135,9 @@ class DonationProvider
      */
     public function getDonationRates()
     {
-        return $this->scopeConfig->getValue(self::PATH_RATES_DONATION, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * Check all configuration for donation module.
-     *
-     * @return bool
-     */
-    public function checkAllConfiguration()
-    {
-        if (
-            $this->getEnableDonationModule()
-            && $this->getDonationShortDescription()
-            && $this->getDonationLongDescription()
-            && $this->getDonationImage()
-            && $this->getDonationRates()
-        ) {
-            return true;
-        }
-
-        return false;
+        return $this->scopeConfig->getValue(
+            self::PATH_RATES_DONATION,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }

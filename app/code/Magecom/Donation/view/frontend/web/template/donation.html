@@ -1,14 +1,20 @@
-<!-- ko if: (getEnabled()) -->
+<!-- ko if: (getEnabled() && getRates()) -->
     <!-- ko if: (isUseDonation()) -->
         <div id="checkout-donation">
-            <p data-bind="html: getShortDescription()"></p>
-            <p data-bind="html: getLongDescription()"></p>
-            <img class="preview-image" attr="src: getImage()"/>
+            <!-- ko if: (getShortDescription()) -->
+                <p data-bind="html: getShortDescription()"></p>
+            <!-- /ko -->
+            <!-- ko if: (getLongDescription()) -->
+                <p data-bind="html: getLongDescription()"></p>
+            <!-- /ko -->
+            <!-- ko if: (getImage()) -->
+                <img class="preview-image" attr="src: getImage()"/>
+            <!-- /ko -->
             <select
                     class="donation-rates"
                     options="getRates()"
                     optionsValue="'rate_price'"
-                    optionsText="'rate_price'"
+                    optionsText="'rate_format_price'"
                     data-bind="click: setDonate"
             />
         </div>

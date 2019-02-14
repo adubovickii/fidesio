@@ -5,22 +5,21 @@ define(
         'Magento_Checkout/js/model/url-builder',
         'mage/storage',
         'Magento_Checkout/js/action/get-totals',
-        'Magento_Checkout/js/model/totals',
+        'Magento_Checkout/js/model/totals'
     ],
     function ($, quote, urlBuilder, storage, getTotals, totals) {
         'use strict';
 
-        return function (deferred, donation, quoteId) {
+        return function (deferred, quoteId) {
             var serviceUrl;
 
             deferred = deferred || $.Deferred();
 
-            serviceUrl = urlBuilder.createUrl('/set-donation/:donationCost/:cartId', {
-                donationCost: donation,
+            serviceUrl = urlBuilder.createUrl('/delete-donation/:cartId', {
                 cartId: quoteId
             });
 
-            return storage.put(
+            return storage.delete(
                 serviceUrl, false
             ).done(
                 function (response) {

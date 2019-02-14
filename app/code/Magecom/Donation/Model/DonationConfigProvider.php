@@ -3,48 +3,53 @@
 namespace Magecom\Donation\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magecom\Donation\Model\DonationProvider;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * Class AgreementsConfigProvider
+ * Class DonationConfigProvider
  *
  * @package Magecom\Donation\Model
  */
 class DonationConfigProvider implements ConfigProviderInterface
 {
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfiguration;
-
-    /**
-     * @var \Magecom\Donation\Model\DonationProvider
+     * @var DonationProvider
      */
     protected $donationProvider;
 
-
+    /**
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
 
     /**
-     * AgreementsConfigProvider constructor.
+     * DonationConfigProvider constructor.
      *
      * @param DonationProvider $donationProvider
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        \Magecom\Donation\Model\DonationProvider $donationProvider,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        DonationProvider $donationProvider,
+        StoreManagerInterface $storeManager
     ) {
         $this->donationProvider = $donationProvider;
         $this->storeManager = $storeManager;
     }
 
     /**
-     * {@inheritdoc}
+     * Get donation config.
+     *
+     * @return array
      */
     public function getConfig()
     {
-        $agreements = [];
-        $agreements['checkoutDonation'] = $this->getDonationConfig();
-        return $agreements;
+        $donationConfig['checkoutDonation'] = ['donationEnable' => false];
+        if (is_array($this->getDonationConfig()) && count($this->getDonationConfig())) {
+            $donationConfig['checkoutDonation'] = $this->getDonationConfig();
+        }
+
+        return $donationConfig;
     }
 
     /**
@@ -56,10 +61,10 @@ class DonationConfigProvider implements ConfigProviderInterface
     {
         $donationConfiguration = [];
 
-        if ($this->donationProvider->checkAllConfiguration()) {
+        if ($this->donationProvider->getEnableDonationModule()) {
             $donationConfiguration = [
                 'donationEnable' => $this->donationProvider->getEnableDonationModule(),
-                'donationImage' => $this->getUrlForImage($this->donationProvider->getDonationImage()),
+                'donationImage' => $this->donationProvider->getDonationImage(),
                 'donationShortDescription' => $this->donationProvider->getDonationShortDescription(),
                 'donationLongDescription' => $this->donationProvider->getDonationLongDescription(),
                 'donationRates' => unserialize($this->donationProvider->getDonationRates()),
@@ -67,19 +72,5 @@ class DonationConfigProvider implements ConfigProviderInterface
         }
 
         return $donationConfiguration;
-    }
-
-    public function getUrlForImage($imagePath)
-    {
-
-        if (isset($imagePath) && is_string($imagePath)) {
-            $mediaUrl = $this ->storeManager-> getStore()->getBaseUrl(
-                \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
-            );
-
-           return sprintf('%s%s',$mediaUrl, $imagePath);
-        }
-
-        return false;
     }
 }

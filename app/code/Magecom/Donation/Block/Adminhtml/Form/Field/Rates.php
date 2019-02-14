@@ -5,9 +5,10 @@ namespace Magecom\Donation\Block\Adminhtml\Form\Field;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Setup\Exception;
 
-
 /**
  * Class Rates
+ *
+ * @package Magecom\Donation\Block\Adminhtml\Form\Field
  */
 class Rates extends AbstractFieldArray
 {
