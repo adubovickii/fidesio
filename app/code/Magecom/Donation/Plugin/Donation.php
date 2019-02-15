@@ -68,10 +68,8 @@ class Donation
             if ($order->getId() && $order->getDonation()) {
                 $donationTotal = new DataObject([
                     'code' => 'donation',
-                    'strong' => true,
                     'value' => $order->getDonation(),
                     'label' => __('Donation'),
-                    'area' => 'footer'
                 ]);
 
                 $subject->addTotal($donationTotal);

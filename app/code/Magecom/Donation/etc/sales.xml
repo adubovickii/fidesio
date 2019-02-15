@@ -25,4 +25,10 @@
             <item name="donation" instance="Magecom\Donation\Model\Quote\Address\Total\Donation" sort_order="150"/>
         </group>
     </section>
+
+    <section name="order_invoice">
+        <group name="totals">
+            <item name="donation" instance="Magecom\Donation\Model\Order\Invoice\Total\Donation" sort_order="500"/>
+        </group>
+    </section>
 </config>

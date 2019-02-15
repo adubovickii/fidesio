@@ -23,6 +23,7 @@ namespace Magecom\Donation\Model\Quote\Address\Total;
 use \Magento\Quote\Model\Quote;
 use \Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use \Magento\Quote\Model\Quote\Address\Total;
+use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 
 /**
  * Class Donation
@@ -31,7 +32,7 @@ use \Magento\Quote\Model\Quote\Address\Total;
  * @package Magecom_Donation
  * @author Magecom
  */
-class Donation extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
+class Donation extends AbstractTotal
 {
     /**
      * Collect grand total address amount
@@ -49,6 +50,7 @@ class Donation extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     ){
         if ($donation = $quote->getDonation()) {
             $total->addTotalAmount('donation', $donation);
+            $total->addBaseTotalAmount('donation', $donation);
         }
 
         return $this;
