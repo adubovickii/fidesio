@@ -20,6 +20,7 @@
 
 namespace Magecom\Donation\Setup;
 
+use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
@@ -56,7 +57,7 @@ class InstallSchema implements InstallSchemaInterface
             $setup->getTable('sales_order'),
             'donation',
             [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'type' => Table::TYPE_DECIMAL,
                 'length' => '12,4',
                 'nullable' => true,
                 'comment' => 'Donation'
@@ -70,7 +71,7 @@ class InstallSchema implements InstallSchemaInterface
             $setup->getTable('sales_invoice'),
             'donation',
             [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'type' => Table::TYPE_DECIMAL,
                 'length' => '12,4',
                 'nullable' => true,
                 'comment' => 'Donation'
@@ -84,7 +85,7 @@ class InstallSchema implements InstallSchemaInterface
             $setup->getTable('quote'),
             'donation',
             [
-                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'type' => Table::TYPE_DECIMAL,
                 'length' => '12,4',
                 'nullable' => true,
                 'comment' => 'Donation'

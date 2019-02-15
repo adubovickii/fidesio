@@ -21,6 +21,7 @@
 namespace Magecom\Donation\Plugin;
 
 use Magecom\Donation\Model\DonationProvider;
+use Magento\Framework\DataObject;
 use Magento\Sales\Block\Order\Totals;
 
 /**
@@ -65,7 +66,7 @@ class Donation
         if ($this->donationProvider->getEnableDonationModule() && !$subject->getTotal('donation')) {
             $order = $subject->getOrder();
             if ($order->getId() && $order->getDonation()) {
-                $donationTotal = new \Magento\Framework\DataObject([
+                $donationTotal = new DataObject([
                     'code' => 'donation',
                     'strong' => true,
                     'value' => $order->getDonation(),
